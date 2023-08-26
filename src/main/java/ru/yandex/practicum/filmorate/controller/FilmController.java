@@ -35,26 +35,31 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
+        log.info("Получение фильмов");
         return filmService.filmStorage.getFilms();
     }
 
     @GetMapping(value = "/{id}")
     public Film getFilm(@PathVariable int id) {
+        log.info("Получение фильма с идентификатором {}", id);
         return filmService.filmStorage.getFilm(id);
     }
 
     @PutMapping(value = "/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("Добавление лайка фильму с идентификатором {} от пользователя с идентификатором {}", id, userId);
         filmService.addLike(id, userId);
     }
 
     @DeleteMapping(value = "/{id}/like/{userId}")
     public void deleteLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("Удаление лайка у фильма с идентификатором {} пользователем с идентификатором {}", id, userId);
         filmService.deleteLike(id, userId);
     }
 
     @GetMapping(value = "/popular")
     public List<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
+        log.info("Получение топ {} фильмов", count);
         return filmService.getTopFilms(count);
     }
 }
