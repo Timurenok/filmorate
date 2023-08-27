@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -13,13 +12,9 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    public UserStorage userStorage;
-
-    @Autowired
-    public UserService() {
-        userStorage = new InMemoryUserStorage();
-    }
+    private final UserStorage userStorage;
 
     public void addFriend(int id, int friendId) {
         User me = userStorage.getUser(id);
@@ -61,5 +56,21 @@ public class UserService {
             return commonFriendsId;
         }
         throw new UnknownUserException(String.format("Пользователя с идентификатором %d не существует.", id));
+    }
+
+    public void createUser(User user) {
+        userStorage.createUser(user);
+    }
+
+    public void updateUser(User user) {
+        userStorage.updateUser(user);
+    }
+
+    public List<User> getUsers() {
+        return userStorage.getUsers();
+    }
+
+    public User getUser(int id) {
+        return userStorage.getUser(id);
     }
 }

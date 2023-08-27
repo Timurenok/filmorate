@@ -1,10 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.InvalidDateException;
-import ru.yandex.practicum.filmorate.exception.InvalidEmailException;
-import ru.yandex.practicum.filmorate.exception.InvalidLoginException;
-import ru.yandex.practicum.filmorate.exception.UnknownUserException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -17,14 +14,14 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
 
     @Override
-    public void postUser(User user) {
+    public void createUser(User user) {
         checkUser(user);
         user.setId(generateId());
         users.put(user.getId(), user);
     }
 
     @Override
-    public void putUser(User user) {
+    public void updateUser(User user) {
         checkUser(user);
         if (users.get(user.getId()) == null) {
             throw new UnknownUserException(String.format("Пользователя с идентификатором %d не существует.",
@@ -40,10 +37,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUser(int id) {
-        if (users.get(id) != null) {
-            return users.get(id);
-        }
-        throw new UnknownUserException(String.format("Пользователя с идентификатором %d не существует.", id));
+        return Optional.ofNullable(users.get(id))
+                .orElseThrow(() -> new UnknownFilmException(String.format(
+                        "Пользователя с идентификатором %d не существует.", id)));
     }
 
     private void checkUser(User user) {

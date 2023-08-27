@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -11,24 +11,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 @Slf4j
+@RequiredArgsConstructor
 public class FilmController {
     private final FilmService filmService;
 
-    @Autowired
-    public FilmController() {
-        filmService = new FilmService();
-    }
-
     @PostMapping
-    public Film postFilm(@RequestBody Film film) {
-        filmService.filmStorage.postFilm(film);
+    public Film createFilm(@RequestBody Film film) {
+        filmService.createFilm(film);
         log.info("Добавление фильма {}", film);
         return film;
     }
 
     @PutMapping
-    public Film putFilm(@RequestBody Film film) {
-        filmService.filmStorage.putFilm(film);
+    public Film updateFilm(@RequestBody Film film) {
+        filmService.updateFilm(film);
         log.info("Обновление фильма {}", film);
         return film;
     }
@@ -36,13 +32,13 @@ public class FilmController {
     @GetMapping
     public List<Film> getFilms() {
         log.info("Получение фильмов");
-        return filmService.filmStorage.getFilms();
+        return filmService.getFilms();
     }
 
     @GetMapping(value = "/{id}")
     public Film getFilm(@PathVariable int id) {
         log.info("Получение фильма с идентификатором {}", id);
-        return filmService.filmStorage.getFilm(id);
+        return filmService.getFilm(id);
     }
 
     @PutMapping(value = "/{id}/like/{userId}")
