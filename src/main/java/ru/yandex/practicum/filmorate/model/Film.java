@@ -21,7 +21,11 @@ public class Film {
     }
 
     public void deleteLike(int userId) {
-        usersWhoLiked.remove(userId);
+        if (usersWhoLiked.contains(userId)) {
+            usersWhoLiked.remove(userId);
+        }
+        throw new UnknownUserException(String.format("Пользователь с идентификатором %d не ставил лайк на этот фильм.",
+                id));
     }
 
     public int getLikes() {
