@@ -14,7 +14,7 @@
 	<name>filmorate</name>
 	<description>Web app for films</description>
 	<properties>
-		<java.version>20</java.version>
+		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>

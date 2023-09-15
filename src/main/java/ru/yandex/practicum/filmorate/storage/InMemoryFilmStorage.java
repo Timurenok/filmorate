@@ -14,13 +14,15 @@ public class InMemoryFilmStorage implements FilmStorage {
     private static int id = 1;
     private final Map<Integer, Film> films = new HashMap<>();
 
-    public void postFilm(Film film) {
+    @Override
+    public void createFilm(Film film) {
         checkFilm(film);
         film.setId(generateId());
         films.put(film.getId(), film);
     }
 
-    public void putFilm(Film film) {
+    @Override
+    public void updateFilm(Film film) {
         checkFilm(film);
         if (films.get(film.getId()) == null) {
             throw new UnknownFilmException(String.format("Фильма с идентификатором %d не существует.", film.getId()));
@@ -28,15 +30,16 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.put(film.getId(), film);
     }
 
+    @Override
     public List<Film> getFilms() {
         return new ArrayList<>(films.values());
     }
 
+    @Override
     public Film getFilm(int id) {
-        if (films.get(id) != null) {
-            return films.get(id);
-        }
-        throw new UnknownFilmException(String.format("Фильма с идентификатором %d не существует.", id));
+        return Optional.ofNullable(films.get(id))
+                .orElseThrow(() -> new UnknownFilmException(String.format("Фильма с идентификатором %d не существует.",
+                        id)));
     }
 
     private void checkFilm(Film film) {
