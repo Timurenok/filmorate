@@ -1,43 +1,35 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UnknownUserException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
-@RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendshipStorage friendshipStorage;
+
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendshipStorage friendshipStorage) {
+        this.userStorage = userStorage;
+        this.friendshipStorage = friendshipStorage;
+    }
 
     public void addFriend(int id, int friendId) {
-        User me = userStorage.getUser(id);
-        User friend = userStorage.getUser(friendId);
-        me.addFriendId(friendId);
-        friend.addFriendId(id);
+        friendshipStorage.addFriend(id, friendId);
     }
 
     public void deleteFriend(int id, int friendId) {
-        User me = userStorage.getUser(id);
-        User friend = userStorage.getUser(friendId);
-        me.deleteFriendId(friendId);
-        friend.deleteFriendId(id);
+        friendshipStorage.deleteFriend(id, friendId);
     }
 
     public List<User> getFriends(int id) {
-        User user = userStorage.getUser(id);
-        if (user != null) {
-            return userStorage.getUsers().stream()
-                    .filter(u -> user.getFriendsId().contains(u.getId()))
-                    .collect(toList());
-        }
-        throw new UnknownUserException(String.format("Пользователя с идентификатором %d не существует.", id));
+        return friendshipStorage.getFriends(id);
     }
 
     public List<User> getCommonFriends(int id, int otherId) {

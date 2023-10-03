@@ -4,7 +4,9 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.exception.UnknownUserException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -14,7 +16,9 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
+    private Rating mpa;
     private Set<Integer> usersWhoLiked = new HashSet<>();
+    private List<Genre> genres = new ArrayList<>();
 
     public void addLike(int userId) {
         usersWhoLiked.add(userId);
