@@ -84,7 +84,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getFilm(int id) {
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select * from films where film_id = ?", id);
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select * from films where film_id = ? limit 1", id);
         Film film = new Film();
         if (filmRows.next()) {
             film.setId(filmRows.getInt("film_id"));

@@ -38,7 +38,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public Genre getGenre(int id) {
-        SqlRowSet genreRows = jdbcTemplate.queryForRowSet("select name from genre where genre_id = ?", id);
+        SqlRowSet genreRows = jdbcTemplate.queryForRowSet("select name from genre where genre_id = ? limit 1", id);
         Genre genre = new Genre();
         if (genreRows.next()) {
             genre.setId(id);
