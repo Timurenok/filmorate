@@ -38,12 +38,10 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public Genre getGenre(int id) {
-        SqlRowSet genreRows = jdbcTemplate.queryForRowSet("select name from genre where genre_id = ? limit 1", id);
-        Genre genre = new Genre();
+        String sql = "select * from genre where genre_id = ?";
+        SqlRowSet genreRows = jdbcTemplate.queryForRowSet(sql, id);
         if (genreRows.next()) {
-            genre.setId(id);
-            genre.setName(genreRows.getString("name"));
-            return genre;
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeGenre(rs), id);
         }
         throw new UnknownRatingException(String.format("Рейтнига с идентификатором %d не существует", id));
     }

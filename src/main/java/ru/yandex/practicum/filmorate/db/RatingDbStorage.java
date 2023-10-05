@@ -20,12 +20,10 @@ public class RatingDbStorage implements RatingStorage {
 
     @Override
     public Rating getRating(int id) {
-        SqlRowSet ratingRows = jdbcTemplate.queryForRowSet("select name from rating where rating_id = ?", id);
-        Rating rating = new Rating();
+        String sql = "select * from rating where rating_id = ?";
+        SqlRowSet ratingRows = jdbcTemplate.queryForRowSet(sql, id);
         if (ratingRows.next()) {
-            rating.setId(id);
-            rating.setName(ratingRows.getString("name"));
-            return rating;
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeRating(rs), id);
         }
         throw new UnknownRatingException(String.format("Рейтнига с идентификатором %d не существует", id));
     }

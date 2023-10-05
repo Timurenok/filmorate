@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,17 +60,23 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User getUser(int id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from users where user_id = ?", id);
-        User user = new User();
+        String sql = "select * from users where user_id = ?";
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, id);
         if (userRows.next()) {
-            user.setId(userRows.getInt("user_id"));
-            user.setEmail(userRows.getString("email"));
-            user.setLogin(userRows.getString("login"));
-            user.setName(userRows.getString("name"));
-            user.setBirthday(Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-            return user;
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeUser(rs), id);
         }
-        throw  new UnknownUserException(String.format("Пользователя с идентификатором %d не существует.", id));
+        throw new UnknownUserException(String.format("Пользователя с идентификатором %d не существует.", id));
+    }
+
+    private User makeUser(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("user_id"));
+        user.setEmail(rs.getString("email"));
+        user.setLogin(rs.getString("login"));
+        user.setName(rs.getString("name"));
+        user.setBirthday(Objects.requireNonNull(rs.getDate("birthday")).toLocalDate());
+        checkUser(user);
+        return user;
     }
 
     private void checkUser(User user) {

@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.RatingStorage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -84,20 +86,26 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getFilm(int id) {
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select * from films where film_id = ? limit 1", id);
-        Film film = new Film();
+        String sql = "select * from films where film_id = ?";
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sql, id);
         if (filmRows.next()) {
-            film.setId(filmRows.getInt("film_id"));
-            film.setName(filmRows.getString("name"));
-            film.setDescription(filmRows.getString("description"));
-            film.setReleaseDate(Objects.requireNonNull(filmRows.getDate("release_date")).toLocalDate());
-            film.setDuration(filmRows.getInt("duration"));
-            film.setMpa(ratingStorage.getRating(filmRows.getInt("rating_id")));
-            film.setGenres(genreStorage.getGenresByFilmId(film.getId()));
-            film.setUsersWhoLiked(likeStorage.getFilmLikes(id));
-            return film;
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeFilm(rs), id);
         }
         throw new UnknownFilmException(String.format("Фильма с идентификатором %d не существует.", id));
+    }
+
+    private Film makeFilm(ResultSet rs) throws SQLException {
+        Film film = new Film();
+        film.setId(rs.getInt("film_id"));
+        film.setName(rs.getString("name"));
+        film.setDescription(rs.getString("description"));
+        film.setReleaseDate(Objects.requireNonNull(rs.getDate("release_date")).toLocalDate());
+        film.setDuration(rs.getInt("duration"));
+        film.setMpa(ratingStorage.getRating(rs.getInt("rating_id")));
+        film.setGenres(genreStorage.getGenresByFilmId(film.getId()));
+        film.setUsersWhoLiked(likeStorage.getFilmLikes(film.getId()));
+        checkFilm(film);
+        return film;
     }
 
     private void checkFilm(Film film) {
