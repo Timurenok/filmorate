@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 import java.util.*;
 
-@Component
+@Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
     private static final int MAX_LENGTH = 200;
     private static final LocalDate EARLIEST_DATE = LocalDate.of(1895, 12, 28);

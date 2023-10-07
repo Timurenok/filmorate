@@ -17,15 +17,15 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@RequestBody Film film) {
-        filmService.createFilm(film);
         log.info("Добавление фильма {}", film);
+        filmService.createFilm(film);
         return film;
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
-        filmService.updateFilm(film);
         log.info("Обновление фильма {}", film);
+        filmService.updateFilm(film);
         return film;
     }
 
